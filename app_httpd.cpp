@@ -24,11 +24,12 @@
 //#define RIGHT_M0    13
 //#define RIGHT_M1    2
 
-#define SPEED_MIN 75   // SPEED IS AT MIN AKA MOTOR OFF
+#define SPEED_MIN 0   // SPEED IS AT MIN AKA MOTOR OFF
+#define SPEED_NUETRAL 19
 
 // Define variables
-int speed = 0;
-int turningAngle = 90;
+int speed = SPEED_NUETRAL;
+int turningAngle = 86;
 int noStop = 0;
 
 //Setting Motor PWM properties
@@ -292,7 +293,7 @@ static esp_err_t cmd_handler(httpd_req_t *req)
   }
   else if (!strcmp(variable, "speed"))
   {
-    if      (val > 180) val = 180;
+    if      (val > 255) val = 255;
     else if (val <   SPEED_MIN) val = SPEED_MIN;
     speed = val;
     //ledcWrite(8, speed);
@@ -447,6 +448,10 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             <p id="compassY">Compass Y: </p>
             <p id="compassZ">Compass Z: </p>
             <p id="compassHeading">Compass Heading: </p>
+
+            <h1>Vessel Control</h1>
+            <p id="speed">Speed: </p>
+            <p id="turningAngle">Turning Angle: </p>
             
             <section id="buttons">
 
@@ -465,8 +470,8 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
                   <table>
                   <tr><td>Vid Quality:</td><td align="center" colspan="2"><input type="range" id="quality" min="10" max="63" value="10" onchange="try{fetch(document.location.origin+'/control?var=quality&val='+this.value);}catch(e){}"></td></tr>
                   <tr><td>Vid Size:</td><td align="center" colspan="2"><input type="range" id="framesize" min="0" max="6" value="5" onchange="try{fetch(document.location.origin+'/control?var=framesize&val='+this.value);}catch(e){}"></td></tr>
-                  <tr><td>Motor Speed:</td><td align="center" colspan="2"><input type="range" id="speed" min="75" max="180" value="75" onchange="try{fetch(document.location.origin+'/control?var=speed&val='+this.value);}catch(e){}"></td></tr>
-                  <tr><td>Turning Angle:</td><td align="center" colspan="2"><input type="range" id="turningAngle" min="0" max="180" value="90" onchange="try{fetch(document.location.origin+'/control?var=turningAngle&val='+this.value);}catch(e){}"></td></tr>
+                  <tr><td>Motor Speed:</td><td align="center" colspan="2"><input type="range" id="speed" min="18" max="26" value="19" onchange="try{fetch(document.location.origin+'/control?var=speed&val='+this.value);}catch(e){}"></td></tr>
+                  <tr><td>Turning Angle:</td><td align="center" colspan="2"><input type="range" id="turningAngle" min="84" max="90" value="86" onchange="try{fetch(document.location.origin+'/control?var=turningAngle&val='+this.value);}catch(e){}"></td></tr>
                   </table>
                 </div>
             </section>         
@@ -490,6 +495,15 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
             document.getElementById("compassZ").innerHTML = String("Compass Z: " + data.compassZ);
             document.getElementById("compassHeading").innerHTML = String("Compass Heading: " + data.compassHeading + " degrees");
           
+          });
+
+          fetch("http://192.168.4.1/status")
+          .then(response => response.json())
+          .then(data => {
+            
+            document.getElementById("speed").innerHTML = String("Speed: " + data.speed);
+            document.getElementById("turningAngle").innerHTML = String("Turning Angle: " + data.turningAngle);
+       
           });
 
         }
@@ -572,10 +586,10 @@ void startCameraServer()
     }
 }
 
-unsigned int get_speed(unsigned int sp)
-{
-  return map(sp, 0, 100, 0, 255);
-}
+//unsigned int get_speed(unsigned int sp)
+//{
+//  return map(sp, 0, 100, 0, 255);
+//}
 
 void robot_setup()
 {
@@ -616,7 +630,7 @@ void robot_fwd()
 //  digitalWrite(RIGHT_M1,LOW);
 //  move_interval=250;
 //  previous_time = millis();  
-speed = 81;
+speed = 22;
 //servo2.write(20);
 }
 
@@ -628,8 +642,8 @@ void robot_back()
 //  digitalWrite(RIGHT_M1,HIGH);
 //  move_interval=250;
 //   previous_time = millis(); 
-speed = 0;
-turningAngle = 90;
+speed = 12;
+turningAngle = 86;
 //servo1.write(90); 
 //servo2.write(0);
 }
@@ -640,7 +654,7 @@ void robot_right()
 //  digitalWrite(LEFT_M1,HIGH);
 //  digitalWrite(RIGHT_M0,HIGH);
 //  digitalWrite(RIGHT_M1,LOW);
-turningAngle = 135;
+turningAngle = 85;
 //servo1.write(135);
 //  move_interval=100;
 //   previous_time = millis();
@@ -652,7 +666,7 @@ void robot_left()
 //  digitalWrite(LEFT_M1,LOW);
 //  digitalWrite(RIGHT_M0,LOW);
 //  digitalWrite(RIGHT_M1,HIGH);
-turningAngle = 45;
+turningAngle = 89;
 //servo1.write(45);
 //  move_interval=100;
 //   previous_time = millis();

@@ -117,9 +117,9 @@ void setup()
 //  
 //  servo1.attach(SERVO_PIN);
 //  servo2.attach(MOTOR_PIN);
-  ledcSetup(2, 50, 16); //channel, freq, resolution
+  ledcSetup(2, 50, 8); //channel, freq, resolution
   ledcAttachPin(SERVO_PIN, 2); // pin, channel
-  ledcSetup(4, 50, 16);
+  ledcSetup(4, 50, 8);
   ledcAttachPin(MOTOR_PIN, 4);
     delay(100);
 
@@ -284,7 +284,7 @@ void loop() {
 //  servo2.write(speed);
  
   ledcWrite(2, map(turningAngle, 0, 180, 0, 255)); // channel, value
-  ledcWrite(3, map(speed, 0, 180, 0, 255));
+  ledcWrite(4, map(speed, 0, 255, 0, 255));
   
   delay(100);
   
